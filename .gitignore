@@ -55,3 +55,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+#add by wjr
+.idea/
+.idea_modules/
