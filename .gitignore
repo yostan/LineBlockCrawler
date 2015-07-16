@@ -57,5 +57,14 @@ docs/_build/
 target/
 
 #add by wjr
+*~
+*.#*
+*#*#
+*.swp
+*.ipr
+*.iml
+*.iws
+*.pyc
+*.pyo
 .idea/
 .idea_modules/
