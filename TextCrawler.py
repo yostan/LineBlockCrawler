@@ -4,6 +4,9 @@
 import re
 import time
 import urllib2
+import os
+import httplib
+import codecs
 
 class ContentExtractor(object):
     #每个窗口包含的行数
@@ -221,22 +224,39 @@ class ContentExtractor(object):
 
     def test_file(self, path):
         ext = ContentExtractor()
-        for url in open(path).readlines():
-            url = url.strip()
-            if not url: continue
-            try:
-                raw_html = urllib2.urlopen(url).read()
-            except urllib2.URLError:
-                print 'url-error'
-                continue
-            if raw_html:
-                 print '\nurl:', url
-                 title, content, keywords, desc = ext.extract(raw_html)
-                 print 'title:', title
-                 print 'content:', content
-            else:
-                print 'url:', url
-                print 'error html -------------'
+        for root, dirs, files in os.walk(path):
+            for filename in files:
+                fullpath = root + "\\\\" + filename
+                ii = 0
+                for url in open(fullpath).readlines():
+                    url = url.strip()
+                    if not url: continue
+                    try:
+                        raw_html = urllib2.urlopen(url).read()
+                    except urllib2.URLError, err:
+                        print 'url-error'
+                        continue
+                    except httplib.IncompleteRead, e:
+                        print 'IncompleteRead'
+                        continue
+                    except httplib.BadStatusLine, ee:
+                        print 'IncompleteRead'
+                        continue
+                    if raw_html:
+                        title, content, keywords, desc = ext.extract(raw_html)
+                        if str(content).strip():
+                            if not os.path.exists(filename):
+                                os.mkdir(filename)
+                            fpath = filename + "\\\\" + str(ii)
+                            fp = codecs.open(fpath, mode = 'ab+', encoding= 'utf-8')
+                            fp.write(content)
+                            ii = ii + 1
+                        print '\nurl:', url
+                        print 'content:', content
+                        print 'title:', title
+                    else:
+                        print 'url:', url
+                        print 'error html -------------'
 
 
     # if __name__ == '__main__':
